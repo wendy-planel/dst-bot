@@ -14,8 +14,9 @@ from bot.command import CommandRouter
 from bot.schemas import Event, NodeMessage
 
 
+global cache
+router = CommandRouter()
 log = structlog.get_logger()
-# 限制读取房间详情的并发
 semaphore = asyncio.Semaphore(6)
 
 
@@ -40,8 +41,6 @@ class LobbyRoomCache:
         return self._cache.get(key)
 
 
-global cache
-router = CommandRouter()
 cache = LobbyRoomCache()
 
 
@@ -131,17 +130,16 @@ async def find_lobby_room(event: Event):
         name = room["name"]
         if key in name:
             count += 1
+            season = room.get("season", "")
+            mode = room.get("mode", "未知模式")
             history_room[count] = {
                 "row_id": room["__rowId"],
                 "region": room["region"],
             }
             reply_message += f"{count}.{room['name']}"
             reply_message += f'({room["connected"]}/{room["maxconnections"]})'
-            reply_message += (
-                f"{constants.season.get(room.get('season', ''), '未知季节')}"
-            )
-            mode = room.get("mode", "未知模式")
-            reply_message += f"({constants.mode.get(mode, mode)})"
+            reply_message += f"{constants.season.get(season, '未知季节')}"
+            reply_message += f"({constants.mode.get(mode, mode)})\n"
         if count > 6:
             break
     if count > 0:
@@ -215,9 +213,19 @@ async def find_room_details_by_id(event: Event):
     players = re.findall(r'name="(.*?)"', room["players"])
     roles = re.findall(r'prefab="(.*?)"', room["players"])
     day = re.findall(r"day=([0-9]+)", room.get("data", ""))
+    daysleftinseason = re.findall(r"daysleftinseason=([0-9]+)", room.get("data", ""))
+    dayselapsedinseason = re.findall(
+        r"dayselapsedinseason=([0-9]+)", room.get("data", "")
+    )
     day = day[0] if day else ""
+    try:
+        daysleftinseason = int(daysleftinseason[0]) if daysleftinseason else 0
+        dayselapsedinseason = int(dayselapsedinseason[0]) if dayselapsedinseason else 0
+        season_day = f"{daysleftinseason}/{daysleftinseason + dayselapsedinseason}"
+    except Exception:
+        season_day = ""
     reply_message = f"[{name}](Steam)({connected}/{maxconnections})\n"
-    reply_message += f"[天数]{day}{constants.season.get(season, '未知季节')}({constants.mode.get(mode, mode)})\n"
+    reply_message += f"[天数]{day}{constants.season.get(season, '未知季节')}({season_day})({constants.mode.get(mode, mode)})\n"
     reply_message += "🏆玩家列表🏆\n"
     index = 0
     for player, role in zip(players, roles):
@@ -228,7 +236,7 @@ async def find_room_details_by_id(event: Event):
         mods = room.get("mods_info", [])
         mods = mods[1::5]
         for index, mod in enumerate(mods):
-            reply_message += f"{index}.{mod}\n"
+            reply_message += f"{index + 1}.{mod}\n"
     else:
         reply_message += "无\n"
     return reply_message

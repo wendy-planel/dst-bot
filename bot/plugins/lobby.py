@@ -7,6 +7,7 @@ from datetime import datetime
 import httpx
 import structlog
 
+from bot import constants
 from bot.schedule import schedule
 from bot.settings import KLEI_TOKEN
 from bot.command import CommandRouter
@@ -117,10 +118,10 @@ async def update_room_details():
     cache.set("room_details", rooms)
 
 
-@router.command("查服.*+")
+@router.command("查房.*+")
 async def find_lobby_room(event: Event):
-    key = event.match_message.removeprefix("查服").strip()
-    reply_message = "查服结果如下(最多显示10条): \n\n"
+    key = event.match_message.removeprefix("查房").strip()
+    reply_message = ""
     if cache.get("lobby_room") is None:
         await update_lobby_room()
     count = 0
@@ -134,16 +135,19 @@ async def find_lobby_room(event: Event):
                 "row_id": room["__rowId"],
                 "region": room["region"],
             }
-            reply_message += f"编号: {count}\n"
-            reply_message += f"存档: {name}\n"
-            reply_message += f'在线人数: {room["connected"]}\n\n'
-        if count >= 10:
+            reply_message += f"{count}.{room['name']}"
+            reply_message += f"({room["connected"]}/{room["maxconnections"]})"
+            reply_message += (
+                f"{constants.season.get(room.get('season', ''), '未知季节')}"
+            )
+            mode = room.get("mode", "未知模式")
+            reply_message += f"({constants.mode.get(mode, mode)})"
+        if count > 6:
             break
     if count > 0:
-        reply_message += "使用查房指令可以获取更多信息如: 查房1\n"
-        reply_message += f'数据更新时间: {lobby_room["update_at"]}'
+        reply_message += "发送`.服务器序号`查询服务器详细信息，如:`.1`\n"
         cache.set("history_room", history_room)
-        return [NodeMessage(content=reply_message)]
+        return reply_message
     else:
         return "404~~"
 
@@ -163,6 +167,7 @@ async def find_player_in_room(event: Event):
         day = re.findall(r"day=([0-9]+)", room.get("data", ""))
         day = day[0] if day else ""
         connected = room.get("connected", "")
+        maxconnections = room.get("maxconnections", "")
         season = room.get("season", "")
         c_connect = f"""c_connect("{room.get('__addr', '')}", {room.get('port', '')})"""
         for player in players:
@@ -175,24 +180,23 @@ async def find_player_in_room(event: Event):
                 reply_message += f"编号: {count}\n"
                 reply_message += f"存档: {name}\n"
                 reply_message += f"玩家: {player}\n"
-                reply_message += f"在线人数: {connected}\n"
+                reply_message += f"在线人数: {connected}/{maxconnections}\n"
                 reply_message += f"天数: {day}\n"
                 reply_message += f"季节: {season}\n"
                 reply_message += f"直连: {c_connect}\n\n"
         if count >= 10:
             break
     if count > 0:
-        reply_message += "使用查房指令可以获取更多信息如: 查房1\n"
-        reply_message += f'数据更新时间: {room_details["update_at"]}'
+        reply_message += "发送`.服务器序号`查询服务器详细信息，如:`.1`\n"
         cache.set("history_room", history_room)
         return [NodeMessage(content=reply_message)]
     else:
         return "404~~"
 
 
-@router.command("查房.*+")
-async def find_room_details(event: Event):
-    key = event.match_message.removeprefix("查房").strip()
+@router.command("\.[0-9]+")
+async def find_room_details_by_id(event: Event):
+    key = event.match_message.removeprefix(".").strip()
     room = cache.get("history_room")["data"][int(key)]
     async with httpx.AsyncClient() as client:
         url = f'https://lobby-v2-{room["region"]}.klei.com/lobby/read'
@@ -204,22 +208,27 @@ async def find_room_details(event: Event):
         response = await client.post(url, json=payload)
         room = response.json()["GET"][0]
     name = room["name"]
-    desc = room.get("desc", "")
+    mode = room.get("mode", "")
     season = room.get("season", "")
     connected = room.get("connected", "")
-    players = re.findall(r'name="(.*?)"', room["players"])[:9]
-    if len(players) > 8:
-        players[-1] = "...."
+    maxconnections = room.get("maxconnections", "")
+    players = re.findall(r'name="(.*?)"', room["players"])
+    roles = re.findall(r'prefab="(.*?)"', room["players"])
     day = re.findall(r"day=([0-9]+)", room.get("data", ""))
     day = day[0] if day else ""
-    c_connect = f"""c_connect("{room.get('__addr', '')}", {room.get('port', '')})"""
-    # 拼接消息
-    reply_message = f"存档: {name}\n"
-    reply_message += f"玩家: {players}\n"
-    reply_message += f"天数: {day}\n"
-    reply_message += f"季节: {season}\n"
-    reply_message += f"直连: {c_connect}\n"
-    reply_message += f"在线人数: {connected}\n"
-    reply_message += f"介绍: {desc}\n\n"
-    reply_message += "使用查玩家指令可以知道该玩家在何处流浪如: 查玩家 大明"
-    return [NodeMessage(content=reply_message)]
+    reply_message = f"[{name}](Steam)({connected}/{maxconnections})\n"
+    reply_message += f"[天数]{day}{constants.season.get(season, '未知季节')}({constants.mode.get(mode, mode)})\n"
+    reply_message += "🏆玩家列表🏆\n"
+    index = 0
+    for player, role in zip(players, roles):
+        index += 1
+        reply_message += f"{index}.{player}({constants.roles.get(role, role)})\n"
+    reply_message += "📃模组列表📃\n"
+    if room.get("mods"):
+        mods = room.get("mods_info", [])
+        mods = mods[1::5]
+        for index, mod in enumerate(mods):
+            reply_message += f"{index}.{mod}\n"
+    else:
+        reply_message += "无\n"
+    return reply_message

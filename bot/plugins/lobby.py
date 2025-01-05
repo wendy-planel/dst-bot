@@ -212,25 +212,28 @@ async def find_room_details_by_id(event: Event):
     maxconnections = room.get("maxconnections", "")
     players = re.findall(r'name="(.*?)"', room["players"])
     roles = re.findall(r'prefab="(.*?)"', room["players"])
-    day = re.findall(r"day=([0-9]+)", room.get("data", ""))
-    daysleftinseason = re.findall(r"daysleftinseason=([0-9]+)", room.get("data", ""))
-    dayselapsedinseason = re.findall(
-        r"dayselapsedinseason=([0-9]+)", room.get("data", "")
-    )
+    day_data = room.get("data", "")
+    day = re.findall(r"day=([0-9]+)", day_data)
+    leftin_season = re.findall(r"daysleftinseason=([0-9]+)", day_data)
+    selapsedin_season = re.findall(r"dayselapsedinseason=([0-9]+)", day_data)
     day = day[0] if day else ""
     try:
-        daysleftinseason = int(daysleftinseason[0]) if daysleftinseason else 0
-        dayselapsedinseason = int(dayselapsedinseason[0]) if dayselapsedinseason else 0
-        season_day = f"{daysleftinseason}/{daysleftinseason + dayselapsedinseason}"
+        leftin_season = int(leftin_season[0]) if leftin_season else 0
+        selapsedin_season = int(selapsedin_season[0]) if selapsedin_season else 0
+        season_day = f"{leftin_season}/{leftin_season + selapsedin_season}"
     except Exception:
         season_day = ""
     reply_message = f"[{name}](Steam)({connected}/{maxconnections})\n"
-    reply_message += f"[天数]{day}{constants.season.get(season, '未知季节')}({season_day})({constants.mode.get(mode, mode)})\n"
+    reply_message += f"[天数]{day}{constants.season.get(season, '未知季节')}"
+    reply_message += f"({season_day})({constants.mode.get(mode, mode)})\n"
     reply_message += "🏆玩家列表🏆\n"
     index = 0
-    for player, role in zip(players, roles):
-        index += 1
-        reply_message += f"{index}.{player}({constants.roles.get(role, role)})\n"
+    if players and roles:
+        for player, role in zip(players, roles):
+            index += 1
+            reply_message += f"{index}.{player}({constants.roles.get(role, role)})\n"
+    else:
+        reply_message += "无\n"
     reply_message += "📃模组列表📃\n"
     if room.get("mods"):
         mods = room.get("mods_info", [])

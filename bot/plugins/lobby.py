@@ -136,7 +136,7 @@ async def find_lobby_room(event: Event):
                 "region": room["region"],
             }
             reply_message += f"{count}.{room['name']}"
-            reply_message += f"({room["connected"]}/{room["maxconnections"]})"
+            reply_message += f'({room["connected"]}/{room["maxconnections"]})'
             reply_message += (
                 f"{constants.season.get(room.get('season', ''), '未知季节')}"
             )

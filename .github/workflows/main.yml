@@ -42,7 +42,7 @@ jobs:
         echo "IMAGE_TAG=${GITHUB_SHA::4}$(date +'%Y%m%d')" >> .env
         echo "PORT=8001" >> .env
         echo "ACCOUNT=1811992125" >> .env
-        echo "WENDY_API=http://36.134.35.245:8000" >> .env
+        echo "WENDY_API=http://36.134.35.245:8001" >> .env
         echo "KLEI_TOKEN=pds-g^KU_QSHhEciD^XZusQbOd+Sh0wX0oMQ/n8uSXQkfN8/QLMBJrdNx5nIU=" >> .env
 
     - name: Sync files

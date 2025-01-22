@@ -14,16 +14,19 @@ services:
       - DATABASE_URL=sqlite:/app/data/bot.sqlite3
     volumes:
       - ${PWD}/data/dst-bot:/app/data
+      - ${PWD}/data/napcat/QQ:/app/.config/QQ
     ports:
       - "${PORT:-8000}:8000"
   napcat:
-    container_name: napcat
     image: mlikiowa/napcat-docker:latest
     restart: always
     environment:
-      - ACCOUNT=${ACCOUNT:-机器人QQ号}
-      - HTTP_ENABLE=true
-      - HTTP_POST_ENABLE=true
-      - HTTP_URLS=["http://dst-bot:8000/event"]
+      - NAPCAT_UID=${NAPCAT_UID}
+      - NAPCAT_GID=${NAPCAT_GID}
     volumes:
-      - ${PWD}/data/napcat/qq:/root/.config/QQ
+      - ${PWD}/data/napcat/QQ:/app/.config/QQ
+      - ${PWD}/data/napcat/config:/app/napcat/config
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+      - "6099:6099"

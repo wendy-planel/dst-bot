@@ -1,4 +1,3 @@
-import base64
 import datetime
 
 import httpx
@@ -88,19 +87,18 @@ async def create_by_file(event: Event):
         "file": file,
         "created_at__gte": now - datetime.timedelta(minutes=30),
     }
-    file_event = (
-        await models.FileEvent.filter(**constraints).order_by("-created_at").first()
-    )
-    if file_event is None:
+    event = await models.FileEvent.filter(**constraints).order_by("-created_at").first()
+    if event is None:
         return "404~~"
     # 下载文件并上传开服
     async with httpx.AsyncClient(timeout=600) as client:
-        post_data = {"file_id": file_event.file_id}
+        post_data = {"file_id": event.file_id}
         response = await client.post(f"{NAPCAT_API}/get_file", json=post_data)
         response = response.json()
-        file_content = response["data"]["base64"]
-        # 获取文件base64内容转为二进制并上传
-        files = {"file": (file_event.file, base64.b64decode(file_content))}
+        # 找到并读取文件
+        filepath = response["data"]["file"]
+        with open(filepath, "rb") as file:
+            files = {"file": (event.file, file.read())}
         response = await client.post(f"{WENDY_API}/deploy/upload", files=files)
         response.raise_for_status()
     return "OK"

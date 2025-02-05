@@ -92,7 +92,6 @@ class Job:
                     mdhms.append(target_mdhms[i])
                     max_timedelta = max(max_timedelta, timedeltas[i])
             next_run = datetime(self.last_run.year, *mdhms, tzinfo=self.tz)
-            # 补救-2月特殊月份
             while not self._are_you_ok(next_run, target_mdhms):
                 next_run += max_timedelta
         log.info(f"[Job] {self.func_name} next run: {next_run}")

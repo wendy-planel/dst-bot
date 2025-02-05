@@ -90,7 +90,6 @@ async def read_regions() -> List[str]:
 
 @schedule.job(minutes=15)
 async def update_lobby_room():
-    log.info("[update_lobby_room]")
     rooms = []
     for region in await read_regions():
         region_rooms = await read_lobby_room(region)
@@ -101,7 +100,6 @@ async def update_lobby_room():
 
 @schedule.job(hours=1)
 async def update_room_details():
-    log.info("[update_room_details]")
     rooms = []
     for region in await read_regions():
         row_ids = set()

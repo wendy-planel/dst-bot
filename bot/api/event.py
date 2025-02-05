@@ -21,18 +21,13 @@ async def receive(
     background_tasks: BackgroundTasks,
     message: dict = Body(),
 ):
-    try:
-        event = Event.model_validate(message)
-        # 对于文件类型的event入库
-        for item in event.message:
-            if item.type == "file":
-                # 文件类型数据准备入库
-                await models.FileEvent.create(
-                    file=item.data.file,
-                    file_id=item.data.file_id,
-                )
-        background_tasks.add_task(run_command, plugin_router, event)
-    except Exception:
-        # log.exception(f"new type message: {message} error: {e}")
-        pass
+    log.info(message)
+    event = Event.model_validate(message)
+    for item in event.message:
+        if item.type == "file":
+            await models.FileEvent.create(
+                file=item.data.file,
+                file_id=item.data.file_id,
+            )
+    background_tasks.add_task(run_command, plugin_router, event)
     return "ok"

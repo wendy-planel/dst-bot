@@ -95,7 +95,6 @@ async def send_message(
             "group_id": group_id,
             "message": message,
         }
-        log.info(f"[send_message]: {payload}")
         response = await client.post(
             f"{NAPCAT_API}/send_msg",
             json=payload,
@@ -138,6 +137,5 @@ async def forward_messages(
             "group_id": group_id,
             "messages": forward,
         }
-        log.info(f"[forward_message]: {payload}")
         response = await client.post(action, json=payload, timeout=600)
     return response.json()

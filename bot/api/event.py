@@ -22,7 +22,10 @@ async def receive(
     message: dict = Body(),
 ):
     log.info(message)
-    event = Event.model_validate(message)
+    try:
+        event = Event.model_validate(message)
+    except Exception:
+        pass
     for item in event.message:
         if item.type == "file":
             await models.FileEvent.create(

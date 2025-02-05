@@ -10,17 +10,17 @@ log = structlog.get_logger()
 
 @router.post("")
 async def create(
-    uid: str = Body(embed=True, description="QQ号"),
+    qq: str = Body(embed=True, description="QQ号"),
 ):
-    admin = await models.Admin.get_or_none(uid=uid)
+    admin = await models.Admin.get_or_none(uid=qq)
     if admin is None:
-        return await models.Admin.create(uid=uid)
+        return await models.Admin.create(uid=qq)
     else:
         return admin
 
 
 @router.delete("")
 async def remove(
-    uid: str = Query(),
+    qq: str = Query(),
 ):
-    return await models.Admin.filter(uid=uid).delete()
+    return await models.Admin.filter(uid=qq).delete()

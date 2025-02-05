@@ -47,13 +47,15 @@ async def create(event: Event):
     async with httpx.AsyncClient(timeout=600) as client:
         url = f"{WENDY_API}/deploy"
         post_data = {
-            "cluster_token": KLEI_TOKEN,
-            "ini": {
-                "cluster_name": cluster_name,
-                "max_players": 4,
-                "cluster_password": cluster_password,
-                "cluster_description": "QQ群: 908262651",
-            },
+            "cluster": {
+                "cluster_token": KLEI_TOKEN,
+                "ini": {
+                    "cluster_name": cluster_name,
+                    "max_players": 4,
+                    "cluster_password": cluster_password,
+                    "cluster_description": "QQ群: 908262651",
+                },
+            }
         }
         response = await client.post(url, json=post_data)
         response.raise_for_status()

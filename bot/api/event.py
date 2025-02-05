@@ -24,13 +24,13 @@ async def receive(
     log.info(message)
     try:
         event = Event.model_validate(message)
+        for item in event.message:
+            if item.type == "file":
+                await models.FileEvent.create(
+                    file=item.data.file,
+                    file_id=item.data.file_id,
+                )
+        background_tasks.add_task(run_command, plugin_router, event)
     except Exception:
         pass
-    for item in event.message:
-        if item.type == "file":
-            await models.FileEvent.create(
-                file=item.data.file,
-                file_id=item.data.file_id,
-            )
-    background_tasks.add_task(run_command, plugin_router, event)
     return "ok"

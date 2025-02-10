@@ -11,7 +11,19 @@ from tortoise.contrib.fastapi import register_tortoise
 from bot.api import router
 from bot.plugins import lobby
 from bot.schedule import schedule
-from bot.settings import APP_NAME, TORTOISE_ORM
+from bot.settings import (
+    QQ,
+    APP_NAME,
+    TORTOISE_ORM,
+    NAPCAT_CONFIG,
+    NAPCAT_CONFIG_PATH,
+)
+
+
+def write_napcat_config():
+    if NAPCAT_CONFIG_PATH:
+        with open(f"{NAPCAT_CONFIG_PATH}/onebot11_{QQ}.json", "w") as file:
+            file.write(NAPCAT_CONFIG)
 
 
 @asynccontextmanager
@@ -28,6 +40,7 @@ async def lifespan(app: FastAPI):
         config=TORTOISE_ORM,
         add_exception_handlers=False,
     )
+    write_napcat_config()
     asyncio.create_task(schedule.run())
     asyncio.create_task(lobby.update_lobby_room())
     asyncio.create_task(lobby.update_room_details())

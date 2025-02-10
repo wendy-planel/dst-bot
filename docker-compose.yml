@@ -7,16 +7,25 @@ services:
     image: dst-bot:${IMAGE_TAG:-latest}
     restart: always
     environment:
-      - ACCOUNT=${ACCOUNT:-机器人QQ号}
+      - QQ=${QQ:-机器人QQ号}
       - KLEI_TOKEN=${KLEI_TOKEN:-科雷令牌}
       - WENDY_API=${WENDY_API:-}
       - NAPCAT_API=http://napcat:3000
+      - NAPCAT_CONFIG_PATH=/app/napcat/config
       - DATABASE_URL=sqlite:/app/data/bot.sqlite3
     volumes:
       - ${PWD}/data/dst-bot:/app/data
       - ${PWD}/data/napcat/QQ:/app/.config/QQ
+      - ${PWD}/data/napcat/config:/app/napcat/config
     ports:
       - "${PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "sh", "-c", "cat /proc/net/tcp | grep ':1F40'"]
+      interval: 30s
+      retries: 3
+      start_period: 2s
+      timeout: 5s
+
   napcat:
     image: mlikiowa/napcat-docker:latest
     restart: always
@@ -30,3 +39,6 @@ services:
       - "3000:3000"
       - "3001:3001"
       - "6099:6099"
+    depends_on:
+      dst-bot:
+        condition: service_healthy

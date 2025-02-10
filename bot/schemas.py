@@ -2,7 +2,7 @@ from typing import Literal, List
 
 from pydantic import BaseModel
 
-from bot.settings import BOT_ACCOUNT
+from bot.settings import QQ
 
 
 class FileMessage(BaseModel):
@@ -26,7 +26,7 @@ class Message(BaseModel):
 
 class NodeMessage(BaseModel):
     name: str = "wendy"
-    uin: str = BOT_ACCOUNT
+    uin: str = QQ
     content: str
 
 

@@ -11,19 +11,19 @@
 
 ### 功能
 
-指令 | 结果 | 样例 | 描述
----- | --- | --- | ---
-查房 | 1.棱镜勋章长期档(0/8)春天(生存)<br>发送'.服务器序号'查询服务器详细信息，如:'.1' | 查房长期 | 按房间名模糊搜索房间信息最多返回7条内容
-查玩家 | 编号: 3<br>存档: 棱镜长期<br>玩家: 大明<br>在线人数: 3<br>天数: 1209<br>季节: autumn<br>直连: c_connect("113.31.186.221", 10053) | 查玩家大明 | 按玩家名模糊搜索房间默认返回10条内容
-.1 | [棱镜勋章长期档](Steam)(0/8)<br>[天数]404春天(2/20)(生存)<br>🏆玩家列表🏆<br>无<br>📃模组列表📃<br>无<br> | .1 | 给定编号查询游戏房间更多信息
-ls |  本群服务器如下: <br>2. 纯萌新勿入短期混档勿入禁选韦伯和沃特秒踢<br>3. [长期]纯净档-蜘蛛森林<br>7. 棱镜长期 | ls | 查询由wendy托管的游戏服 (需使用[wendy](https://github.com/leiyi2000/wendy))
-备份 | <div align=""><img src="https://raw.githubusercontent.com/leiyi2000/dst-bot/main/docs/r1.png" style="width:200px; height:100px;" /></div> | 备份1 | 将会备份指定存档以QQ文件的形式发送到群内 (需使用[wendy](https://github.com/leiyi2000/wendy))
-开服 | OK | 开服温蒂 或者 开服温蒂-123456 | 房间名: 温蒂 密码：123456 (需使用[wendy](https://github.com/leiyi2000/wendy) + 管理权限)
-文件开服 | OK | 文件开服 Cluster_1.zip | 需先发送文件Cluster_1.zip到群内或单独聊天，后发送命令开服 (需使用[wendy](https://github.com/leiyi2000/wendy) + 管理权限)
-重启 | OK | 重启1 | 重启由wendy托管的游戏服 (需使用[wendy](https://github.com/leiyi2000/wendy) + 管理权限)
-回档 | OK | 回档1-3 | 将回滚3天存档编号为1的存档 (需使用[wendy](https://github.com/leiyi2000/wendy) + 管理权限)
-关服 | OK | 关服1 | 关闭由wendy托管的游戏服 (需使用[wendy](https://github.com/leiyi2000/wendy) + 管理权限)
-重置 | OK | 重置1 | 重置由wendy托管的游戏服 (需使用[wendy](https://github.com/leiyi2000/wendy) + 管理权限)
+指令 | 结果 | 样例 | 描述 | 管理员权限
+---- | --- | --- | --- | ---
+查房 | 1.棱镜勋章长期档(0/8)春天(生存)<br>发送'.服务器序号'查询服务器详细信息，如:'.1' | 查房长期 | 按房间名模糊搜索房间信息最多返回7条内容 | 否
+查玩家 | 编号: 3<br>存档: 棱镜长期<br>玩家: 大明<br>在线人数: 3<br>天数: 1209<br>季节: autumn<br>直连: c_connect("113.31.186.221", 10053) | 查玩家大明 | 按玩家名模糊搜索房间默认返回10条内容 | 否
+.1 | [棱镜勋章长期档](Steam)(0/8)<br>[天数]404春天(2/20)(生存)<br>🏆玩家列表🏆<br>无<br>📃模组列表📃<br>无<br> | .1 | 给定编号查询游戏房间更多信息 | 否
+ls |  本群服务器如下: <br>2. 纯萌新勿入短期混档勿入禁选韦伯和沃特秒踢<br>3. [长期]纯净档-蜘蛛森林<br>7. 棱镜长期 | ls | 查询由wendy托管的游戏服 (需使用[wendy](https://github.com/leiyi2000/wendy)) | 否
+备份 | <div align=""><img src="https://raw.githubusercontent.com/leiyi2000/dst-bot/main/docs/r1.png" style="width:200px; height:100px;" /></div> | 备份1 | 将会备份指定存档以QQ文件的形式发送到群内 (需使用[wendy](https://github.com/leiyi2000/wendy)) | 否
+开服 | OK | 开服温蒂 或者 开服温蒂-123456 | 房间名: 温蒂 密码：123456 (需使用[wendy](https://github.com/leiyi2000/wendy)) | 是
+文件开服 | OK | 文件开服 Cluster_1.zip | 需先发送文件Cluster_1.zip到群内或单独聊天，后发送命令开服 (需使用[wendy](https://github.com/leiyi2000/wendy)) | 是
+重启 | OK | 重启1 | 重启由wendy托管的游戏服 (需使用[wendy](https://github.com/leiyi2000/wendy)) | 是
+回档 | OK | 回档1-3 | 将回滚3天存档编号为1的存档 (需使用[wendy](https://github.com/leiyi2000/wendy)) | 是
+关服 | OK | 关服1 | 关闭由wendy托管的游戏服 (需使用[wendy](https://github.com/leiyi2000/wendy)) | 是
+重置 | OK | 重置1 | 重置由wendy托管的游戏服 (需使用[wendy](https://github.com/leiyi2000/wendy)) | 是
 
 ## 快速部署
 - 拉取项目
@@ -40,6 +40,16 @@ ls |  本群服务器如下: <br>2. 纯萌新勿入短期混档勿入禁选韦�
   cd dst-bot && source .env && docker compose up -d
   ```
 
+- 消息上报接口
+  ```text
+  http://127.0.0.1:8000/event
+  ```
+
+- NapCatQQ
+  ```
+  http://127.0.0.1:6099/webui/?token=(日志有打印)
+  ```
+
 - 添加管理权限
   ```shell
   curl -X 'POST' \
@@ -47,7 +57,7 @@ ls |  本群服务器如下: <br>2. 纯萌新勿入短期混档勿入禁选韦�
     -H 'accept: application/json' \
     -H 'Content-Type: application/json' \
     -d '{
-    "uid": "QQ"
+    "qq": "QQ"
   }'
   ```
 

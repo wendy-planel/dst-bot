@@ -7,11 +7,11 @@ from datetime import datetime
 import httpx
 import structlog
 
-from bot import constants
 from bot.schedule import schedule
 from bot.settings import KLEI_TOKEN
 from bot.command import CommandRouter
 from bot.schemas import Event, NodeMessage
+from bot.constants import SEASON, MODE, ROLES
 
 
 global cache
@@ -136,8 +136,8 @@ async def find_lobby_room(event: Event):
             }
             reply_message += f"{count}.{room['name']}"
             reply_message += f'({room["connected"]}/{room["maxconnections"]})'
-            reply_message += f"{constants.season.get(season, '未知季节')}"
-            reply_message += f"({constants.mode.get(mode, mode)})\n"
+            reply_message += f"{SEASON.get(season, '未知季节')}"
+            reply_message += f"({MODE.get(mode, mode)})\n"
         if count > 6:
             break
     if count > 0:
@@ -222,14 +222,14 @@ async def find_room_details_by_id(event: Event):
     except Exception:
         season_day = ""
     reply_message = f"[{name}](Steam)({connected}/{maxconnections})\n"
-    reply_message += f"[天数]{day}{constants.season.get(season, '未知季节')}"
-    reply_message += f"({season_day})({constants.mode.get(mode, mode)})\n"
+    reply_message += f"[天数]{day}{SEASON.get(season, '未知季节')}"
+    reply_message += f"({season_day})({MODE.get(mode, mode)})\n"
     reply_message += "🏆玩家列表🏆\n"
     index = 0
     if players and roles:
         for player, role in zip(players, roles):
             index += 1
-            reply_message += f"{index}.{player}({constants.roles.get(role, role)})\n"
+            reply_message += f"{index}.{player}({ROLES.get(role, role)})\n"
     else:
         reply_message += "无\n"
     reply_message += "📃模组列表📃\n"

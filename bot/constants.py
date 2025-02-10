@@ -1,17 +1,17 @@
-season = {
+SEASON = {
     "autumn": "秋天",
     "winter": "冬天",
     "spring": "春天",
     "summer": "夏天",
 }
 
-mode = {
+MODE = {
     "survival": "生存",
     "wilderness": "荒野",
     "endless": "无尽",
 }
 
-roles = {
+ROLES = {
     "wilson": "威尔逊",
     "willow": "薇洛",
     "wolfgang": "沃尔夫冈",
@@ -28,4 +28,5 @@ roles = {
     "wormwood": "沃姆伍德",
     "warly": "沃利",
     "wurt": "沃特",
+    "wanda": "旺达",
 }

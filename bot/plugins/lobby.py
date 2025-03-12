@@ -141,7 +141,7 @@ async def find_lobby_room(event: Event):
         if count > 6:
             break
     if count > 0:
-        reply_message += "发送`.服务器序号`查询服务器详细信息，如:`.1`\n"
+        reply_message += "查询房间详细信息，如:.1\n"
         cache.set("history_room", history_room)
         return reply_message
     else:
@@ -183,7 +183,7 @@ async def find_player_in_room(event: Event):
         if count >= 10:
             break
     if count > 0:
-        reply_message += "发送`.服务器序号`查询服务器详细信息，如:`.1`\n"
+        reply_message += "查询房间详细信息，如:.1\n"
         cache.set("history_room", history_room)
         return [NodeMessage(content=reply_message)]
     else:
@@ -240,4 +240,6 @@ async def find_room_details_by_id(event: Event):
             reply_message += f"{index + 1}.{mod}\n"
     else:
         reply_message += "无\n"
+    c_connect = f"""c_connect("{room.get('__addr', '')}", {room.get('port', '')})"""
+    reply_message += f"直连: {c_connect}\n\n"
     return reply_message

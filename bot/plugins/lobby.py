@@ -14,7 +14,6 @@ from bot.schemas import Event, NodeMessage
 from bot.constants import SEASON, MODE, ROLES
 
 
-global cache
 router = CommandRouter()
 log = structlog.get_logger()
 semaphore = asyncio.Semaphore(6)
@@ -94,7 +93,6 @@ async def update_lobby_room():
     for region in await read_regions():
         region_rooms = await read_lobby_room(region)
         rooms.extend(region_rooms)
-    global cache
     cache.set("lobby_room", rooms)
 
 
@@ -129,7 +127,7 @@ async def find_lobby_room(event: Event):
         if key in name:
             count += 1
             season = room.get("season", "")
-            mode = room.get("mode", "未知模式")
+            mode = room.get("intent", "未知模式")
             history_room[count] = {
                 "row_id": room["__rowId"],
                 "region": room["region"],
@@ -141,7 +139,7 @@ async def find_lobby_room(event: Event):
         if count > 6:
             break
     if count > 0:
-        reply_message += "发送`.服务器序号`查询服务器详细信息，如:`.1`\n"
+        reply_message += "查询服务器详细信息，如回复:.1"
         cache.set("history_room", history_room)
         return reply_message
     else:
@@ -183,7 +181,7 @@ async def find_player_in_room(event: Event):
         if count >= 10:
             break
     if count > 0:
-        reply_message += "发送`.服务器序号`查询服务器详细信息，如:`.1`\n"
+        reply_message += "查询服务器详细信息，如回复:.1\n"
         cache.set("history_room", history_room)
         return [NodeMessage(content=reply_message)]
     else:
@@ -204,7 +202,7 @@ async def find_room_details_by_id(event: Event):
         response = await client.post(url, json=payload)
         room = response.json()["GET"][0]
     name = room["name"]
-    mode = room.get("mode", "")
+    mode = room.get("intent", "未知模式")
     season = room.get("season", "")
     connected = room.get("connected", "")
     maxconnections = room.get("maxconnections", "")

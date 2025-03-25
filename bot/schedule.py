@@ -188,7 +188,7 @@ class Schedule:
                 self.clear()
                 clear_interval = 0
             clear_interval += interval
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(1)
 
     def add_jobs(
         self,

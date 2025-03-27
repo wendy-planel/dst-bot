@@ -103,6 +103,8 @@ async def create_by_file(event: Event):
             files = {"file": (event.file, file.read())}
         response = await client.post(f"{WENDY_API}/deploy/upload", files=files)
         response.raise_for_status()
+        id = response.json()["id"]
+        await client.get(f"{WENDY_API}/deploy/restart/{id}")
     return "OK"
 
 

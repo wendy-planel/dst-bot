@@ -1,8 +1,5 @@
-"""服务入口"""
-
+import os
 import asyncio
-
-from contextlib import asynccontextmanager
 
 from aerich import Command
 from fastapi import FastAPI
@@ -21,12 +18,11 @@ from bot.settings import (
 
 
 def write_napcat_config():
-    if NAPCAT_CONFIG_PATH:
+    if NAPCAT_CONFIG_PATH and not os.path.exists(NAPCAT_CONFIG_PATH):
         with open(f"{NAPCAT_CONFIG_PATH}/onebot11_{QQ}.json", "w") as file:
             file.write(NAPCAT_CONFIG)
 
 
-@asynccontextmanager
 async def lifespan(app: FastAPI):
     command = Command(
         tortoise_config=TORTOISE_ORM,

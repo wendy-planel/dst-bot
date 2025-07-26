@@ -1,4 +1,3 @@
-version: "3"
 services:
   dst-bot:
     build:
@@ -19,6 +18,7 @@ services:
       - ${PWD}/data/napcat/config:/app/napcat/config
     ports:
       - "${PORT:-8000}:8000"
+    mem_limit: 1g
     healthcheck:
       test: ["CMD", "sh", "-c", "cat /proc/net/tcp | grep ':1F40'"]
       interval: 30s
@@ -30,8 +30,8 @@ services:
     image: mlikiowa/napcat-docker:latest
     restart: always
     environment:
-      - NAPCAT_UID=${NAPCAT_UID}
-      - NAPCAT_GID=${NAPCAT_GID}
+      - NAPCAT_UID=${NAPCAT_UID:-1000}
+      - NAPCAT_GID=${NAPCAT_GID:-1000}
     volumes:
       - ${PWD}/data/napcat/QQ:/app/.config/QQ
       - ${PWD}/data/napcat/config:/app/napcat/config

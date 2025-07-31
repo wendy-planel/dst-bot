@@ -28,7 +28,8 @@ class LobbyRoomCache:
         key: Literal["lobby_room", "room_details", "history_room"],
         data,
     ):
-        del self._cache[key]
+        if key in self._cache:
+            del self._cache[key]
         self._cache[key] = {
             "data": data,
             "update_at": datetime.now().strftime("%Y-%m-%d-%H:%M"),
